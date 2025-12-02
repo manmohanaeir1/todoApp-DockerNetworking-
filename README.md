@@ -5,12 +5,12 @@ Short description
 - **Purpose:** Demo app for learning Docker networking and deployment of a MERN stack.
 
 Quick links
-- **Docker Networking guide:** `DOCKER_NETWORKING.md` — explains container networking, bridge networks, and commands.
-- **Docker Compose guide:** `DOCKER_COMPOSE_GUIDE.md` — explains the Compose file, commands and troubleshooting.
+- **Docker Networking guide:** [DOCKER_NETWORKING.md](./DOCKER_NETWORKING.md) — explains container networking, bridge networks, and commands.
+- **Docker Compose guide:** [DOCKER_COMPOSE_GUIDE.md](./DOCKER_COMPOSE_GUIDE.md) — explains the Compose file, commands and troubleshooting.
 
-Helpful links (relative)
-- Docker networking doc: ./DOCKER_NETWORKING.md
-- Docker Compose doc: ./DOCKER_COMPOSE_GUIDE.md
+Helpful links (clickable)
+- Docker networking doc: [DOCKER_NETWORKING.md](./DOCKER_NETWORKING.md)
+- Docker Compose doc: [DOCKER_COMPOSE_GUIDE.md](./DOCKER_COMPOSE_GUIDE.md)
 
 Quick start (using Docker Compose)
 1. Build and start all services (MongoDB, backend, frontend):
