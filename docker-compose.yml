@@ -1,19 +1,27 @@
-# Two services: backend API on 5000, frontend (nginx) on 80
+# Three services: MongoDB, backend API, and frontend
 services:
+  mongodb:
+    image: mongo:7.0
+    container_name: mongodb
+    restart: always
+
   backend:
     build: ./server
     container_name: backend
     restart: always
-    env_file:
-      - ./server/.env        
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/todoapp
+      - PORT=5000
     ports:
       - "5000:5000"
+    depends_on:
+      - mongodb
 
   frontend:
     build:
       context: ./client
       args:
-        VITE_API_URL: http://3.26.242.54:5000/api
+        VITE_API_URL: http://localhost:5000/api
     container_name: frontend
     restart: always
     ports:
