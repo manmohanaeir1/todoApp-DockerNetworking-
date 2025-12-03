@@ -10,6 +10,8 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+
+let name1 = 'manmohan';
 // Middleware
 app.use(cors());
 app.use(express.json());
