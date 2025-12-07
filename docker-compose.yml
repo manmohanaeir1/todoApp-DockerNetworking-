@@ -7,6 +7,7 @@ services:
 
   backend:
     build: ./server
+    image: mern-backend:latest
     container_name: backend
     restart: always
     environment:
@@ -22,6 +23,7 @@ services:
       context: ./client
       args:
         VITE_API_URL: http://16.171.145.191:5000/api
+    image: mern-frontend:latest
     container_name: frontend
     restart: always
     ports:
