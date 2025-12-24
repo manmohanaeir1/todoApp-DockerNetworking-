@@ -71,7 +71,7 @@ jobs:
           ssh -i "$SSH_DIR/ec2_key.pem" "$EC2_USER@$EC2_HOST" << EOF
             set -e
 
-            # Clone if app folder doesn't exist
+            # Clone repo if app folder doesn't exist
             if [ ! -d "$EC2_APP_DIR" ]; then
               git clone "$REPO_URL" "$EC2_APP_DIR"
             fi
@@ -90,7 +90,7 @@ jobs:
             # Rebuild Docker containers
             docker compose up -d --build
 
-            # Clean unused Docker images ONLY for this project
+            # Clean dangling Docker images only for this project
             docker images -q --filter "label=project=$PROJECT_LABEL" --filter "dangling=true" | xargs -r docker rmi -f || true
 
             # Show running containers
