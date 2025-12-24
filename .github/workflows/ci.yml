@@ -1,4 +1,4 @@
- name: build-and-lint
+name: build-and-lint
 
 on:
   push:
@@ -59,40 +59,22 @@ jobs:
         run: |
           SSH_DIR="$HOME/.ssh"
           mkdir -p "$SSH_DIR"
-
-          # Write private key
           echo "$EC2_KEY" > "$SSH_DIR/ec2_key.pem"
           chmod 600 "$SSH_DIR/ec2_key.pem"
-
-          # Add EC2 host to known_hosts
           ssh-keyscan -H "$EC2_HOST" >> "$SSH_DIR/known_hosts"
-
-          # Deploy on EC2
           ssh -i "$SSH_DIR/ec2_key.pem" "$EC2_USER@$EC2_HOST" << EOF
             set -e
-
-            # Clone repo if app folder doesn't exist
             if [ ! -d "$EC2_APP_DIR" ]; then
               git clone "$REPO_URL" "$EC2_APP_DIR"
             fi
             cd "$EC2_APP_DIR"
-
-            # Ensure it's a git repo
             if [ ! -d ".git" ]; then
               git init
               git remote add origin "$REPO_URL"
             fi
-
-            # Pull latest code from master
             git fetch --all
             git reset --hard origin/master
-
-            # Rebuild Docker containers
             docker compose up -d --build
-
-            # Clean dangling Docker images only for this project
             docker images -q --filter "label=project=$PROJECT_LABEL" --filter "dangling=true" | xargs -r docker rmi -f || true
-
-            # Show running containers
             docker compose ps
           EOF
