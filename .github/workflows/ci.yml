@@ -1,4 +1,4 @@
-name: build-and-lint
+ name: build-and-lint
 
 on:
   push:
@@ -34,11 +34,11 @@ jobs:
         working-directory: client
         run: npm run lint -- --max-warnings=0
 
-      - name: Build backend image
-        run: docker build -t backend ./server
+      - name: Build backend image with project label
+        run: docker build -t backend --label project=myproject ./server
 
-      - name: Build frontend image
-        run: docker build -t frontend ./client
+      - name: Build frontend image with project label
+        run: docker build -t frontend --label project=myproject ./client
 
   deploy:
     needs: build-and-lint
@@ -48,12 +48,14 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup SSH and deploy
+      - name: Setup SSH and deploy safely
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_KEY: ${{ secrets.EC2_KEY }}
           EC2_APP_DIR: ${{ secrets.EC2_APP_DIR }}
+          REPO_URL: ${{ secrets.REPO_URL }}
+          PROJECT_LABEL: myproject
         run: |
           SSH_DIR="$HOME/.ssh"
           mkdir -p "$SSH_DIR"
@@ -66,19 +68,30 @@ jobs:
           ssh-keyscan -H "$EC2_HOST" >> "$SSH_DIR/known_hosts"
 
           # Deploy on EC2
-          ssh -i "$SSH_DIR/ec2_key.pem" "$EC2_USER@$EC2_HOST" << 'EOF'
+          ssh -i "$SSH_DIR/ec2_key.pem" "$EC2_USER@$EC2_HOST" << EOF
             set -e
+
+            # Clone if app folder doesn't exist
+            if [ ! -d "$EC2_APP_DIR" ]; then
+              git clone "$REPO_URL" "$EC2_APP_DIR"
+            fi
             cd "$EC2_APP_DIR"
 
-            # Pull latest code
+            # Ensure it's a git repo
+            if [ ! -d ".git" ]; then
+              git init
+              git remote add origin "$REPO_URL"
+            fi
+
+            # Pull latest code from master
             git fetch --all
-            git reset --hard origin/main
+            git reset --hard origin/master
 
             # Rebuild Docker containers
             docker compose up -d --build
 
-            # Clean unused Docker images
-            docker image prune -f
+            # Clean unused Docker images ONLY for this project
+            docker images -q --filter "label=project=$PROJECT_LABEL" --filter "dangling=true" | xargs -r docker rmi -f || true
 
             # Show running containers
             docker compose ps
