@@ -22,7 +22,7 @@ services:
     build:
       context: ./client
       args:
-        VITE_API_URL: http://16.171.159.132:5000/api
+        VITE_API_URL: http://13.49.238.244:5000/api
     image: mern-frontend:latest
     container_name: frontend
     restart: always
