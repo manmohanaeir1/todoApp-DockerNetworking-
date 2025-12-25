@@ -75,7 +75,7 @@ function App() {
                 </div>
                 <div>
                   <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-                    Task Manager Pro
+                    Task Manager Pro updated CICD
                   </h1>
                   <p className="text-gray-300 mt-1 text-sm md:text-base">
                     Streamlined task management with CI/CD pipeline
